@@ -11,8 +11,8 @@
 	'use strict';
 
 	var _App = global.App,
-		modules = {},
-		App = function (mods, callback) {
+		loadedModules = {},
+		App = function (modules, callback) {
 			// Make sure that we always create a new sandbox
 			// for the current context. Also affords us some
 			// syntactic sugar by not having to explicitly
@@ -21,17 +21,17 @@
 			// instead of:
 			// new App([modules], function(app) {  });
 			if (!(this instanceof App)) {
-				return new App(mods, callback);
+				return new App(modules, callback);
 			}
 
-			var i = mods.length;
+			var i = modules.length;
 
 			// Execute each module, which in turn adds methods
 			// to the current sandbox instance.
 			// NOTE: Since modules are supposed to be MODULAR,
 			// they aren't loaded in order, just quickly.
 			while (i--) {
-				modules[mods[i]](this, App);
+				loadedModules[modules[i]](this, App);
 			}
 
 			// After the modules have added their functionality
@@ -53,7 +53,7 @@
 	// Convenience method for application to define modules
 	// for later loading into a sandbox.
 	App.define = function (name, callback) {
-		modules[name] = callback;
+		loadedModules[name] = callback;
 	};
 
 	// Give back any globals we introduced into the application.
